@@ -25,7 +25,7 @@ expectDefaults <- function(ds){
 }
 
 test_that('ncdf4',{
-	if (!length(exPath) ) skip("could not obtain example nc file")
+	if (!length(exPath)) skip("could not obtain example nc file")
 	if (!require('ncdf4') ) warning("ncdf4 package not installed, skipping test") else {
 		ds <- fLoadFluxNCIntoDataframe(VarList.V.s, exPath, count = c(1L,1L,nRec)
 			,NcPackage.s = 'ncdf4'

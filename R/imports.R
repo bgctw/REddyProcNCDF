@@ -14,9 +14,3 @@ NULL
 #' @importFrom utils capture.output
 NULL
 
-
-# only checked in code by require(), let R CMD check complain (only NOTE)
-#importFrom(boot, boot)
-#importFrom(segmented, segmented, seg.control)
-#importFrom(minpack.lm, nlsLM, nls.lm.control)
-

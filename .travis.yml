@@ -13,12 +13,14 @@ addons:
       - libnetcdf-dev
       - libudunits2-dev
 
+# REddyProc will be installed from github or CRAN
+# in order to be faster, install REddyProc prerequisites as binaries
 r_binary_packages:
+  - ncdf4
+  - RNetCDF
   - dplyr
   - purrr
   - tibble
-  - ncdf4
-  - RNetCDF
   - minpack.lm
   - segmented
   - mlegp
