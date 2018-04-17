@@ -5,70 +5,59 @@ README.md is generated from README.Rmd. Please edit that file
 rmarkdown::render("README.Rmd") 
 maybe clear cache before
 -->
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/REddyProc)](http://cran.r-project.org/package=REddyProc) [![Travis-CI Build Status](https://travis-ci.org/bgctw/REddyProc.svg?branch=master)](https://travis-ci.org/bgctw/REddyProc)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/REddyProcNCDF)](http://cran.r-project.org/package=REddyProcNCDF) [![Travis-CI Build Status](https://travis-ci.org/bgctw/REddyProcNCDF.svg?branch=master)](https://travis-ci.org/bgctw/REddyProcNCDF)
 
 Overview
 --------
 
-`REddyProc` package supports processing (half)hourly data from Eddy-Covariance sensors.
+This is an extension of the [`REddyProc` package](https://github.com/bgctw/REddyProc), which supports processing (half)hourly data from Eddy-Covariance sensors.
 
-There is an online-formular to use the functionality of the package including description at <https://www.bgc-jena.mpg.de/bgi/index.php/Services/REddyProcWeb>.
+It adds functionality of reading half-hourly Net Ecosystem Exchange (NEE) data from NetCDF files.
 
 Installation
 ------------
 
 ``` r
 # Release stable version from CRAN
-install.packages("REddyProc")
+#not yet: install.packages("REddyProcNCDF")
 
 # The development version from GitHub using devtools:
 # install.packages("devtools")
-devtools::install_github("bgctw/REddyProc")
+install.packages("REddyProc")
+devtools::install_github("bgctw/REddyProcNCDF")
 ```
 
 Usage
 -----
 
-A simple example performs Lookuptable-based gapFilling of Net-Ecosystem-Exchange (NEE) and plotting a fingerprint plot of the filled values.
+There is an example file acceseed from the REddyProc repository that stores half-hourly Net-Ecosystem-Exchange (NEE) data, that is read and displayed.
 
 ``` r
-library(REddyProc)
-#+++ Input data from csv (example needs to be downloaded)
-examplePath <- getExamplePath('Example_DETha98.txt', isTryDownload = TRUE)
+library(REddyProcNCDF)
+?REddyProcNCDF
+
+#+++ Input data from NetCDF file (example needs to be downloaded)
+examplePath <- getExamplePath('Example_DE-Tha.1996.1998.hourly_selVars.nc'
+                              , isTryDownload = TRUE)
 if (length(examplePath)) {
-  EddyData.F <- fLoadTXTIntoDataframe(examplePath)
+  EddyData.F <- fLoadFluxNCIntoDataframe(c('NEE', 'Rg', 'NEE_f'), examplePath)
 } else {
-  warning(
+  stop(
       "Could not find example text data file."
       ," In order to execute this example code,"
       ," please, allow downloading it from github. " 
       ," Type '?getExamplePath' for more information.")
-  # using RData version distributed with the package instead
-  EddyData.F <- Example_DETha98
 }
-#+++ If not provided, calculate VPD from Tair and rH
-EddyData.F$VPD <- fCalcVPDfromRHandTair(EddyData.F$rH, EddyData.F$Tair)
-#+++ Add time stamp in POSIX time format
-EddyDataWithPosix.F <- fConvertTimeToPosix(
-  EddyData.F, 'YDH', Year.s = 'Year', Day.s = 'DoY', Hour.s = 'Hour')
-#+++ Initalize R5 reference class sEddyProc for processing of eddy data
-#+++ with all variables needed for processing later
-EddyProc.C <- sEddyProc$new(
-  'DE-Tha', EddyDataWithPosix.F, c('NEE','Rg','Tair','VPD', 'Ustar'))
-#Location of DE-Tharandt
-EddyProc.C$sSetLocationInfo(
-  Lat_deg.n = 51.0, Long_deg.n = 13.6, TimeZone_h.n = 1)  
-#
-#++ Fill NEE gaps with MDS gap filling algorithm (without prior ustar filtering)
-EddyProc.C$sMDSGapFill('NEE', FillAll.b = FALSE)
-#
-#++ Export gap filled and partitioned data to standard data frame
-FilledEddyData.F <- EddyProc.C$sExportResults()
-#
-#++ Example plots of filled data to screen or to directory \plots
-EddyProc.C$sPlotFingerprintY('NEE_f', Year.i = 1998)
+#> Converted time format 'YMDH' to POSIX with column name 'DateTime'.
+#> character(0)
+#> Loaded BGI Fluxnet NC file: /tmp/Rtmp9nslD2/REddyProcExamples/Example_DE-Tha.1996.1998.hourly_selVars.nc with the following headers:
+#>  *** DateTime(POSIXDate Time) year(-) month(-) day(-) hour(-) NEE(umol_m-2_s-1) Rg(W_m-2) NEE_f(umol_m-2_s-1)
+head(EddyData.F)
+#>              DateTime year month day hour NEE Rg NEE_f
+#> 1 1996-01-01 00:30:00 1996     1   1  0.5  NA  0    NA
+#> 2 1996-01-01 01:00:00 1996     1   1  1.0  NA  0    NA
+#> 3 1996-01-01 01:30:00 1996     1   1  1.5  NA  0    NA
+#> 4 1996-01-01 02:00:00 1996     1   1  2.0  NA  0    NA
+#> 5 1996-01-01 02:30:00 1996     1   1  2.5  NA  0    NA
+#> 6 1996-01-01 03:00:00 1996     1   1  3.0  NA  0    NA
 ```
-
-![](README-example-1.png)
-
-Further examples are in [vignette(useCase)](https://github.com/bgctw/REddyProc/blob/master/vignettes/useCase.md) and [vignette(DEGEbExample)](https://github.com/bgctw/REddyProc/blob/master/vignettes/DEGebExample.md)
