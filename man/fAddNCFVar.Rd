@@ -10,10 +10,12 @@
   \item{Var.s}{Variable name or names (vector of strings)}
   \item{FileName.s}{NetCDF file name as a string}
   \item{Dir.s}{Directory as a string}
-  \item{NcPackage.s}{Name (string) of R NetCDF package (implemented for 'RNetCDF' and 'ncdf4')}
+  \item{NcPackage.s}{Name (string) of R NetCDF package
+(implemented for 'RNetCDF' and 'ncdf4')}
   \item{CallFunction.s}{Name (string) of function called from}
   \item{VarNew.s}{Name (string) of the variable in Data.F, offer renaming}
-  \item{\dots}{further arguments to var.get.nc or ncvar_get, such as start and count}
+  \item{\dots}{further arguments to var.get.nc or ncvar_get
+, such as start and count}
 }
 
 \value{Data frame with new nc variable added.}
@@ -23,5 +25,5 @@ Department for Biogeochemical Integration at MPI-BGC, Jena, Germany <REddyProc-h
 
 
 
-
+\seealso{\code{\link{fLoadFluxNCIntoDataframe}}}
 
