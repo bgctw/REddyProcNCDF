@@ -33,15 +33,33 @@ It adds functionality of reading half-hourly Net Ecosystem Exchange (NEE)
 data from NetCDF files.
 
 ## Installation
+### NetCDF system libraries
+Reading NetCDF files requires several system libraries to be installed.
+
+Debian based OS users: do from a shell:
+```
+sudo apt-get update
+sudo apt-get install libnetcdf-dev
+sudo apt-get install libudnits2-dev
+```
+
+Windows users, see [ncdf home page](http://cirrus.ucsd.edu/~pierce/ncdf/)
+
+Mac users: 
+
+### R-packages
 ```{r, eval = FALSE}
 # Release stable version from CRAN
 #not yet: install.packages("REddyProcNCDF")
 
 # The development version from GitHub using devtools:
 # install.packages("devtools")
-install.packages("REddyProc")
+install.packages("ncdf4")
 devtools::install_github("bgctw/REddyProcNCDF")
 ```
+
+Alternatively to the ncdf4 package dependency, REddyProcNCDF also works if the
+RNetCDF package has been installed.
 
 ## Usage
 
