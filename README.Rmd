@@ -39,14 +39,13 @@ Reading NetCDF files requires several system libraries to be installed.
 Debian based OS users (Ubuntu, Docker): do from a shell:
 ```
 sudo apt-get update
-sudo apt-get install libssl-dev
 sudo apt-get install libnetcdf-dev
 sudo apt-get install libudunits2-dev
 ```
 
 Windows users, see [ncdf home page](http://cirrus.ucsd.edu/~pierce/ncdf/)
 
-Mac users: 
+Mac users: TODO 
 
 ### R-packages
 ```{r, eval = FALSE}
@@ -72,18 +71,11 @@ stores half-hourly Net-Ecosystem-Exchange (NEE) data, that is read and displayed
 library(REddyProcNCDF)
 ?REddyProcNCDF
 
-#+++ Input data from NetCDF file (example needs to be downloaded)
-examplePath <- getExamplePath('Example_DE-Tha.1996.1998.hourly_selVars.nc'
-                              , isTryDownload = TRUE)
-if (length(examplePath)) {
-  EddyData.F <- fLoadFluxNCIntoDataframe(c('NEE', 'Rg', 'NEE_f'), examplePath)
-} else {
-  stop(
-      "Could not find example text data file."
-      ," In order to execute this example code,"
-      ," please, allow downloading it from github. " 
-      ," Type '?getExamplePath' for more information.")
-}
+examplePath <- system.file(
+  file.path('examples','Example_DE-Tha.1996.1998.hourly_selVars.nc')
+  , package = "REddyProcNCDF")
+EddyData.F <- fLoadFluxNCIntoDataframe(c('NEE', 'Rg', 'NEE_f'), examplePath)
 head(EddyData.F)
+# EddyData.F can now be used to initialize EddyProc R5 class 
 ```
 

@@ -1,7 +1,3 @@
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#+++ Load NetCDF data
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 #' @export
 fLoadFluxNCIntoDataframe <- function(
   ##title<<
@@ -11,11 +7,9 @@ fLoadFluxNCIntoDataframe <- function(
   ## Fluxnet BGI format.
   ## The time stamp information needs to be provided as variables
   ## 'year', 'month', 'day', 'hour'.
-  VarList.V.s         ##<< String vector of variables to be read in
-  , FileName.s        ##<< File name as a string
-  , Dir.s = ''        ##<< Directory as a string
-  , NcPackage.s = 'ncdf4'  ##<< Name of R NetCDF package
-    ## (implemented for 'RNetCDF' and 'ncdf4') as a string
+  varNames         ##<< string vector of variables to be read in
+  , fileName        ##<< File name as a string
+  , ncPkg = requireNetCDFPackage()    ##<< scalar string of package name to be used
   , fReadTime = fReadTimeSeveralCols	##<< function that reads time columns
     ## It must append columns year (from 0AD), month, day, and hour (fractional)
     ## See \code{\link{fReadTimeSeveralCols}}
@@ -23,14 +17,10 @@ fLoadFluxNCIntoDataframe <- function(
 ) {
   ##author<<AMM, KS, TW
   # Check for R NetCDF packages
-  if (!((NcPackage.s == 'ncdf4' && suppressWarnings(requireNamespace("ncdf4")) )
-        || (NcPackage.s == 'RNetCDF' && suppressWarnings(requireNamespace("RNetCDF")) )) )
-    stop('fLoadFluxNCIntoDataframe::: Required package \'', NcPackage.s
-         , '\' could not be loaded!')
-
+  ncPkg <- requireNetCDFPackage(ncPkg)
   # Read in time variables
   Data.F <- fReadTime(
-    NULL, FileName.s, Dir.s, NcPackage.s, 'fLoadFluxNCIntoDataframe', ...)
+    NULL, fileName, ncPkg = ncPkg, 'fLoadFluxNCIntoDataframe', ...)
   # Convert time format to POSIX
   # !Attention: Use YMDH time format because julday and hour time stamps
   # inconsistent at end of year
@@ -41,11 +31,11 @@ fLoadFluxNCIntoDataframe <- function(
   # capture both stdErr and stdOut from fAddNCVar, so that messages can be suppressed
   msgFromfAddNCFVar <- capture.output(capture.output(
 		  Data.F <- fAddNCFVar(
-		    Data.F, setdiff(VarList.V.s, colnames(Data.F)), FileName.s, Dir.s, NcPackage.s
+		    Data.F, setdiff(varNames, colnames(Data.F)), fileName, ncPkg = ncPkg
 		    , 'fLoadFluxNCIntoDataframe', ...)
 		  , type = c("message")))
   message(msgFromfAddNCFVar)
-  message('Loaded BGI Fluxnet NC file: ', FileName.s, ' with the following headers:')
+  message('Loaded BGI Fluxnet NC file: ', fileName, ' with the following headers:')
   message(' *** ', paste(colnames(Data.F), '(', as.character(lapply(
     Data.F, attr, which = 'units')), ')', collapse = ' ', sep = ''))
   Data.F
@@ -53,29 +43,55 @@ fLoadFluxNCIntoDataframe <- function(
   ## Data frame with data from nc file.
   ##examples<<
   ## \donttest{
-  ## EddyNCData.F <- fLoadFluxNCIntoDataframe(c('NEE', 'Rg', 'NEE_f')
-  ##     , getExamplePath('Example_DE-Tha.1996.1998.hourly_selVars.nc', TRUE))
+  ## examplePath <- system.file(
+  ##  file.path('examples','Example_DE-Tha.1996.1998.hourly_selVars.nc')
+  ##  , package = "REddyProcNCDF")
+  ## EddyNCData <- fLoadFluxNCIntoDataframe(c('NEE', 'Rg', 'NEE_f'), examplePath)
   ## }
 }
 
 .tmp.f <- function(){
-  FileName.s <- 'Example_DE-Tha.1996.1998.hourly_selVars.nc'
+  fileName <- 'Example_DE-Tha.1996.1998.hourly_selVars.nc'
   Dir.s <- '../REddyProc/examples';
-  VarList.V.s <- c('NEE', 'Rg', 'rH', 'Tair', 'NEE_f')
-  NcPackage.s <- 'ncdf4'
+  varNames <- c('NEE', 'Rg', 'rH', 'Tair', 'NEE_f')
+  ncPkg <- 'ncdf4'
   str(tmp <- fLoadFluxNCIntoDataframe(
     c('NEE', 'Rg'), 'Example_DE-Tha.1996.1998.hourly_selVars.nc'
-    , Dir.s = Dir.s, count = c(1L, 1L, 4000L) ))
+    ,  count = c(1L, 1L, 4000L) ))
 }
+
+#' @export
+requireNetCDFPackage <- function(
+  ### require namespace of given NetCDF package
+  packageNames = c('RNetCDF','ncdf4')  ##<< string vector: Name of R NetCDF packages
+  ## to be tried to used in this order
+) {
+  ##details<< currently 'RNetCDF' and 'ncdf4' are supported
+  ## Loading package namespace is tried in the order of occurence in packageNames
+  choices <- c('RNetCDF','ncdf4')
+  for (pkg in packageNames) {
+    if ((pkg %in% choices) && suppressWarnings(requireNamespace(pkg)) )
+      ##value<< The package name whose namespace has been loaded
+      return(pkg)
+  }
+  stop('None of the Ncdf-packages (', paste(packageNames, collapse = ",")
+       , ') could not be loaded')
+}
+
+.tmp.f <- function(){
+  requireNetCDFPackage("bla")
+  requireNetCDFPackage("ncdf4")
+  requireNetCDFPackage(c("ncdf4","RNetCDF"))
+  requireNetCDFPackage(c("RNetCDF","ncdf4"))
+}
+
 
 #' @export
 fReadTimeSeveralCols <- function(
 		### Constructing time from columnns 'year',...,'hour'
 		Data.F                ##<< Data frame
-		, FileName.s          ##<< NetCDF file name as a string
-		, Dir.s               ##<< Directory as a string
-		, NcPackage.s         ##<< Name (string) of R NetCDF package
-		  ## (implemented for 'RNetCDF' and 'ncdf4')
+		, fileName          ##<< NetCDF file name as a string
+		, ncPkg = requireNetCDFPackage()    ##<< scalar string of package name to be used
 		, CallFunction.s = '' ##<< Name (string) of function called from
 		, colYear = 'year'	  ##<< Name (string) of variable holding the year
 		, colMonth = 'month'	##<< Name (string) of variable holding the month
@@ -98,12 +114,12 @@ fReadTimeSeveralCols <- function(
   ##seealso<< \code{\link{fLoadFluxNCIntoDataframe}}
   if (!length(colHour) ) {
 		Data.F <- fAddNCFVar(
-		  Data.F, c(colYear, colMonth, colDay), FileName.s, Dir.s, NcPackage.s
+		  Data.F, c(colYear, colMonth, colDay), fileName,  ncPkg = ncPkg
 		  , CallFunction.s, VarNew.s = c("year", "month", "day"), ...)
 		Data.F$hour <- defaultHour
 	} else {
 		Data.F <- fAddNCFVar(
-		  Data.F, c(colYear, colMonth, colDay, colHour), FileName.s, Dir.s, NcPackage.s
+		  Data.F, c(colYear, colMonth, colDay, colHour), fileName,  ncPkg = ncPkg
 		  , CallFunction.s, VarNew.s = c("year", "month", "day", "hour"), ...)
 	}
 	Data.F
@@ -113,10 +129,8 @@ fReadTimeSeveralCols <- function(
 fReadTimeBerkeley <- function(
 		### Reads time columns (year, month, day, hour) from column in ISODate integer format
 		Data.F                ##<< Data frame
-		, FileName.s           ##<< NetCDF file name as a string
-		, Dir.s                ##<< Directory as a string
-		, NcPackage.s          ##<< Name (string) of R NetCDF package
-		  ## (implemented for 'RNetCDF' and 'ncdf4')
+		, fileName           ##<< NetCDF file name as a string
+		, ncPkg = requireNetCDFPackage()    ##<< scalar string of package name to be used
 		, CallFunction.s = ''    ##<< Name (string) of function called from
 		, colTime = 'TIMESTAMP_END'	##<< the column name (string) holding time with
 		  ## format described in details
@@ -129,7 +143,7 @@ fReadTimeBerkeley <- function(
 	#
 	##seealso<< \code{\link{fReadTimeSeveralCols}}
   ##seealso<< \code{\link{fLoadFluxNCIntoDataframe}}
-	Data.F <- fAddNCFVar(Data.F, colTime, FileName.s, Dir.s, NcPackage.s
+	Data.F <- fAddNCFVar(Data.F, colTime, fileName,  ncPkg = ncPkg
 	                     , CallFunction.s, ...)
 	timeStampChar <- as.character(Data.F[[colTime]])
 	Data.F <- cbind(Data.F, data.frame(
@@ -146,7 +160,7 @@ fReadTimeBerkeley <- function(
 .tmp.f <- function() {
 	# testing if baseDate is stored in nc-file
 	# http://stackoverflow.com/questions/18819112/use-r-to-extract-time-series-from-netcdf-data
-	InputNCF.s <- REddyProc:::fSetFile(FileName.s, Dir.s, T, 'fAddNCFVar')
+	InputNCF.s <- REddyProc:::fSetFile(fileName,  T, 'fAddNCFVar')
 	NCFile.C <- open.nc(InputNCF.s)
 	baseDate <- att.get.nc(NCFile.C, "NC_GLOBAL", "base_date")
 }
@@ -159,10 +173,9 @@ fAddNCFVar <- function(
   ## Add variable from NetCDF file to data frame
   Data.F                ##<< Data frame
   , Var.s                ##<< Variable name or names (vector of strings)
-  , FileName.s           ##<< NetCDF file name as a string
-  , Dir.s                ##<< Directory as a string
-  , NcPackage.s          ##<< Name (string) of R NetCDF package
-    ## (implemented for 'RNetCDF' and 'ncdf4')
+  , fileName           ##<< NetCDF file name as a string
+  , ncPkg = requireNetCDFPackage()    ##<< scalar string of package name to be used
+  ## to be tried to used in this order
   , CallFunction.s = ''    ##<< Name (string) of function called from
   , VarNew.s = Var.s		 ##<< Name (string) of the variable in Data.F, offer renaming
   , ...					##<< further arguments to var.get.nc or ncvar_get
@@ -172,21 +185,20 @@ fAddNCFVar <- function(
   ##seealso<< \code{\link{fLoadFluxNCIntoDataframe}}
   if (length(VarNew.s) != length(Var.s) ) stop(
     "VarNew.s must have the same length as Var.s")
-  InputNCF.s <- fSetFile(FileName.s, Dir.s, T, 'fAddNCFVar')
-  if (NcPackage.s == 'RNetCDF') {
+  InputNCF.s <- fSetFile(fileName, T, 'fAddNCFVar')
+  if (ncPkg == 'RNetCDF') {
 	  fOpen <- RNetCDF::open.nc
 	  fReadVar <- RNetCDF::var.get.nc
 	  fClose <- RNetCDF::close.nc
 	  #fInqVar <- var.inq.nc
 	  fGetAtt <- RNetCDF::att.get.nc
-  } else if (NcPackage.s == 'ncdf4') {
+  } else if (ncPkg == 'ncdf4') {
 	  fOpen <- ncdf4::nc_open
 	  fReadVar <- ncdf4::ncvar_get
 	  fClose <- ncdf4::nc_close
 	  fGetAtt <- function(...) { ncdf4::ncatt_get(...)$value }
   } else {
-	  stop(CallFunction.s, ':::fAddNCFVar::: NC file ', InputNCF.s
-	     , ' could not be opened!')
+    stop('specified netCDF package is not supported: ', ncPkg)
   }
   #
 	NCFile.C <- fOpen(InputNCF.s)	# NCFile.C <- nc_open(InputNCF.s)
@@ -205,7 +217,7 @@ fAddNCFVar <- function(
 								newCol
 							} else {
 								warning("could not read variable ", Var.s[i]
-								        , " from netCdf-File ", FileName.s)
+								        , " from netCdf-File ", fileName)
 								return(NULL)
 							}
 							#attr(Data.F[[1]], 'units')
@@ -233,9 +245,9 @@ fAddNCFVar <- function(
 
 .tmp.f <- function(){
   Data.F <- NULL; Var.s <- 'NEE'
-  FileName.s <- 'Example_DE-Tha.1996.1998.hourly_selVars.nc'
+  fileName <- 'Example_DE-Tha.1996.1998.hourly_selVars.nc'
   Dir.s <- 'inst / examples'
-  NcPackage.s <- 'ncdf4'
+  ncPkg <- 'ncdf4'
 }
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -247,21 +259,14 @@ fLoadFluxNCInfo <- function(
   ##description<<
   ## Load site information attributes such as latitude, longitude and others
   ## from BGI NetCDF files
-  FileName.s               ##<< NetCDF file name as a string
-  , Dir.s                  ##<< Directory as a string
-  , NcPackage.s = 'ncdf4'  ##<< Name (string) of R NetCDF package
-    ## (implemented for 'RNetCDF' and 'ncdf4')
+  fileName               ##<< NetCDF file name as a string
+  , ncPkg = requireNetCDFPackage()    ##<< scalar string of package name to be used
   , CallFunction.s = ''    ##<< Name (string) of function called from
 ) {
   ##author<< AMM, TW
   ##seealso<< \code{\link{fLoadFluxNCIntoDataframe}}
-  # Check for R NetCDF packages
-  if (!((NcPackage.s == 'ncdf4' && suppressWarnings(requireNamespace("ncdf4")) )
-        || (NcPackage.s == 'RNetCDF' && suppressWarnings(requireNamespace("RNetCDF")) )) )
-    stop('fLoadFluxNCIntoDataframe::: Required package \'', NcPackage.s
-         , '\' could not be loaded!')
-  InputNCF.s <- fSetFile(FileName.s, Dir.s, T, 'fAddNCFVar')
-  if (NcPackage.s == 'RNetCDF') {
+  InputNCF.s <- fSetFile(fileName,  T, 'fAddNCFVar')
+  if (ncPkg == 'RNetCDF') {
     NCFile.C <- RNetCDF::open.nc(InputNCF.s)
     tryCatch({
       ##details<<
@@ -284,7 +289,7 @@ fLoadFluxNCInfo <- function(
           NCFile.C, 'NC_GLOBAL', 'IGBP_class')
       )
     }, finally = RNetCDF::close.nc(NCFile.C))
-  } else if (NcPackage.s == 'ncdf4') {
+  } else if (ncPkg == 'ncdf4') {
     NCFile.C <- ncdf4::nc_open(
       InputNCF.s, write = FALSE, readunlim = TRUE, verbose = FALSE)
     tryCatch({
@@ -299,16 +304,15 @@ fLoadFluxNCInfo <- function(
       )
     }, finally = ncdf4::nc_close(NCFile.C))
   } else {
-    stop(CallFunction.s, ':::fLoadFluxNCInfo::: NC file ', InputNCF.s
-         , ' could not be opened!')
+    stop('specified netCDF package is not supported: ', ncPkg)
   }
   ##value<< Attibute list
   SiteInfo.L
 }
 
 .tmp.f <- function(){
-  FileName.s <- 'Example_DE-Tha.1996.1998.hourly_selVars.nc'
+  fileName <- 'Example_DE-Tha.1996.1998.hourly_selVars.nc'
   Dir.s <- '../REddyProc/examples'
-  NcPackage.s <- 'ncdf4'
-  fLoadFluxNCInfo('Example_DE-Tha.1996.1998.hourly_selVars.nc', Dir.s, 'ncdf4')
+  ncPkg <- 'ncdf4'
+  fLoadFluxNCInfo('Example_DE-Tha.1996.1998.hourly_selVars.nc',  'ncdf4')
 }

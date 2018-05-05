@@ -14,13 +14,13 @@ isNotOnCRAN <- identical(Sys.getenv("NOT_CRAN"), "true")
 exPath <- system.file(
   file.path('examples','Example_DE-Tha.1996.1998.hourly_selVars.nc')
   , package = "REddyProcNCDF")
-VarList.V.s <- c('NEE', 'Rg', 'rH', 'Tair', 'NEE_f')
+varNames <- c('NEE', 'Rg', 'rH', 'Tair', 'NEE_f')
 nRec <- 1000L
 
 
 expectDefaults <- function(ds){
 	expect_that( nrow(ds), equals(nRec) )
-	expect_true( all( VarList.V.s %in% colnames(ds)) )
+	expect_true( all( varNames %in% colnames(ds)) )
 	expect_true( all( c('DateTime','year','month','day','hour') %in% colnames(ds)) )
 	expect_true( is.character(sapply(ds[,-1], function(var){attributes(var)$units})) )
 	expect_that( as.vector(sapply(ds[,-1], function(var){attributes(var)$varnames}))
@@ -29,9 +29,9 @@ expectDefaults <- function(ds){
 
 test_that('ncdf4',{
 	if (!length(exPath)) skip("could not obtain example nc file")
-	if (!require('ncdf4') ) warning("ncdf4 package not installed, skipping test") else {
-		ds <- fLoadFluxNCIntoDataframe(VarList.V.s, exPath, count = c(1L,1L,nRec)
-			,NcPackage.s = 'ncdf4'
+	if (!requireNamespace('ncdf4') ) warning("ncdf4 package not installed, skipping test") else {
+		ds <- fLoadFluxNCIntoDataframe(varNames, exPath, count = c(1L,1L,nRec)
+			, ncPkg = 'ncdf4'
 		)
 		expectDefaults(ds)
 	}
@@ -39,9 +39,9 @@ test_that('ncdf4',{
 
 test_that('RNetCDF',{
 	if (!length(exPath) ) skip("could not obtain example nc file")
-	if (!require('RNetCDF') ) warning("RNetCDF package not installed, skipping test") else {
-			ds <- fLoadFluxNCIntoDataframe(VarList.V.s, exPath, count = c(1L,1L,nRec)
-				,NcPackage.s = 'RNetCDF'
+	if (!requireNamespace('RNetCDF') ) warning("RNetCDF package not installed, skipping test") else {
+			ds <- fLoadFluxNCIntoDataframe(varNames, exPath, count = c(1L,1L,nRec)
+				, ncPkg = 'RNetCDF'
 			)
 			expectDefaults(ds)
 		}
@@ -53,8 +53,8 @@ test_that('RNetCDF missing col',{
 				expect_warning(
 						suppressMessages(
 							ds <- fLoadFluxNCIntoDataframe(
-							  c("bla",VarList.V.s), exPath, count = c(1L,1L,nRec)
-									,NcPackage.s = 'RNetCDF'
+							  c("bla",varNames), exPath, count = c(1L,1L,nRec)
+									, ncPkg = 'RNetCDF'
 							)
 						)
 				)
@@ -68,8 +68,8 @@ test_that('ncdf4 missing col',{
 				expect_warning(
 						suppressMessages(
 							ds <- fLoadFluxNCIntoDataframe(
-							  c("bla",VarList.V.s), exPath, count = c(1L,1L,nRec)
-									,NcPackage.s = 'ncdf4'
+							  c("bla",varNames), exPath, count = c(1L,1L,nRec)
+									, ncPkg = 'ncdf4'
 							)
 						)
 				)

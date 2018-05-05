@@ -42,36 +42,37 @@ fStripFileExtension <- function(
 fSetFile <- function(
   ##description<<
   ## Set file name with path and check if directory and / or file exists
-  FileName.s            ##<< File name as a string
-  , Dir.s                ##<< Directory as a string
-  , IO.b                 ##<< Input / output flag, TRUE for input, FALSE for output
-  , CallFunction.s = ''    ##<< Name (string) of the caller function for warnings
+  fileName            ##<< File name as a string
+  , isInput                 ##<< Input / output flag, TRUE for input, FALSE for output
+  , callingFunction = ''    ##<< Name (string) of the caller function for warnings
 )
   ##author<<
   ## AMM
-  # TEST: Dir.s <- 'inst / examples'; FileName.s <- 'Example_DETha98.txt'; IO.b <- T; CallFunction.s <- 'test'
+  # TEST: Dir.s <- 'inst / examples'; FileName.s <- 'Example_DETha98.txt'; isInput <- T; callingFunction <- 'test'
 {
+  FileName.s <- basename(fileName)
+  Dir.s <- dirname(fileName)
   # Check if string for directory provided
-  Dir.b <- fCheckValString(Dir.s)
+  Dir.b <- (Dir.s != ".")
 
   # Check if directory exists
-  if (IO.b && Dir.b && (file.access(Dir.s, mode = 4) != 0))
-    stop(CallFunction.s, ':::fSetFile::: Directory does not exist: ', Dir.s)
+  if (isInput && Dir.b && (file.access(Dir.s, mode = 4) != 0))
+    stop(callingFunction, ':::fSetFile::: Directory does not exist: ', Dir.s)
 
   # Make directory if mode is output
-  if ( !IO.b && Dir.b && (file.access(Dir.s, mode = 0) != 0) ) {
+  if ( !isInput && Dir.b && (file.access(Dir.s, mode = 0) != 0) ) {
     dir.create(Dir.s)
-    message(CallFunction.s, ':::fSetFile::: Directory created: ', Dir.s)
+    message(callingFunction, ':::fSetFile::: Directory created: ', Dir.s)
     if (file.access(Dir.s, mode = 2) != 0)
-      stop(CallFunction.s, ':::fSetFile::: Directory could not be created: ', Dir.s)
+      stop(callingFunction, ':::fSetFile::: Directory could not be created: ', Dir.s)
   }
 
   # Set file name accordingly
   File.s <- if (Dir.b) file.path( Dir.s, FileName.s ) else FileName.s
 
   # If input file, check if file exists
-  if (IO.b && (file.access(File.s, mode = 4) != 0) )
-    stop(CallFunction.s, ':::fSetFile::: File does not exist or has no read permission: ', File.s)
+  if (isInput && (file.access(File.s, mode = 4) != 0) )
+    stop(callingFunction, ':::fSetFile::: File does not exist or has no read permission: ', File.s)
 
   File.s
   ##value<<
