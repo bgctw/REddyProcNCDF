@@ -36,11 +36,12 @@ data from NetCDF files.
 ### NetCDF system libraries
 Reading NetCDF files requires several system libraries to be installed.
 
-Debian based OS users: do from a shell:
+Debian based OS users (Ubuntu, Docker): do from a shell:
 ```
 sudo apt-get update
+sudo apt-get install libssl-dev
 sudo apt-get install libnetcdf-dev
-sudo apt-get install libudnits2-dev
+sudo apt-get install libudunits2-dev
 ```
 
 Windows users, see [ncdf home page](http://cirrus.ucsd.edu/~pierce/ncdf/)
@@ -54,12 +55,12 @@ Mac users:
 
 # The development version from GitHub using devtools:
 # install.packages("devtools")
-install.packages("ncdf4")
+install.packages("RNetCDF")
 devtools::install_github("bgctw/REddyProcNCDF")
 ```
 
-Alternatively to the ncdf4 package dependency, REddyProcNCDF also works if the
-RNetCDF package has been installed.
+Alternatively to the RNetCDF package dependency, REddyProcNCDF also works if the
+ncdf4 package has been installed.
 
 ## Usage
 

@@ -6,11 +6,14 @@ context('readNcdf')
 isNotOnCRAN <- identical(Sys.getenv("NOT_CRAN"), "true")
 # isNotOnCRAN <- TRUE  # may set interactively to TRUE
 
-exPath <- getExamplePath(
-  'Example_DE-Tha.1996.1998.hourly_selVars.nc', isNotOnCRAN)
+#exPath <- REddyProc::getExamplePath(
+#  'Example_DE-Tha.1996.1998.hourly_selVars.nc', isNotOnCRAN)
 # if (!length(exPath)) warning(
 #   "Example_DE-Tha.1996.1998.hourly_selVars.nc not available. "
 #   , "Skipping corresponding tests.")
+exPath <- system.file(
+  file.path('examples','Example_DE-Tha.1996.1998.hourly_selVars.nc')
+  , package = "REddyProcNCDF")
 VarList.V.s <- c('NEE', 'Rg', 'rH', 'Tair', 'NEE_f')
 nRec <- 1000L
 
@@ -46,7 +49,7 @@ test_that('RNetCDF',{
 
 test_that('RNetCDF missing col',{
 			if (!length(exPath) ) skip("could not obtain example nc file")
-			if (!require('RNetCDF') ) warning("ncdf4 package not installed, skipping test") else {
+			if (!require('RNetCDF') ) warning("RNetCDF package not installed, skipping test") else {
 				expect_warning(
 						suppressMessages(
 							ds <- fLoadFluxNCIntoDataframe(

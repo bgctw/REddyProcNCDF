@@ -7,7 +7,7 @@ This package enhances REddyProc a package for
 standard and extensible Eddy-Covariance data post-processing includes
   uStar-filtering, gap-filling, and flux-partitioning.
 A general description and an online tool based on this REddyProc can be found
-here: \url{https://www.bgc-jena.mpg.de/bgi/index.php/Services/REddyProcNCDFWeb}.
+here: \url{https://www.bgc-jena.mpg.de/bgi/index.php/Services/REddyProcWeb}.
 
 This package adds functionality to read data from netCDF files.
 }

@@ -1,7 +1,3 @@
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#+++ call testthat unit tests in directory inst\tests +++
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 if (require("testthat", quietly = TRUE)) {
 	pkg <- "REddyProcNCDF"
 	#library(pkg, character.only = TRUE)

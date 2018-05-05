@@ -4,7 +4,7 @@ language: R
 #sudo: false
 sudo: required  # to allow r_binary_packages
 cache: packages
-env: _R_CHECK_FORCE_SUGGESTS_=false
+#env: _R_CHECK_FORCE_SUGGESTS_=false
 
 # libraries necessary for RNetCDF and ncdf4
 addons:
@@ -15,14 +15,14 @@ addons:
 
 # REddyProc will be installed from github or CRAN
 # in order to be faster, install REddyProc prerequisites as binaries
-r_binary_packages:
-  - ncdf4
-  - RNetCDF
-  - dplyr
-  - purrr
-  - tibble
-  - minpack.lm
-  - segmented
-  - mlegp
-  - testthat
-  - knitr
+#r_binary_packages:
+#  - ncdf4
+#  - RNetCDF
+#  - dplyr
+#  - purrr
+#  - tibble
+#  - minpack.lm
+#  - segmented
+#  - mlegp
+#  - testthat
+#  - knitr

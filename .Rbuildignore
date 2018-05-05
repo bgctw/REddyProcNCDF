@@ -26,6 +26,5 @@
 ^examples$
 ^develop$
 ^cache$
-^inst/examples/
 ^inst/REddyProcExamples/
 ^\.travis\.yml$

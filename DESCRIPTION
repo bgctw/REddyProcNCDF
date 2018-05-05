@@ -1,19 +1,17 @@
 Package: REddyProcNCDF
 Type: Package
 Version: 1.1.4
-Title: Reading data from NetCDF files for REddyProc
+Title: Reading Data from NetCDF Files for REddyProc
 Authors@R: c( person( "Department for Biogeochemical Integration at MPI-BGC, Jena, Germany", role=c("cph"), email="REddyProc-help@bgc-jena.mpg.de" )
               ,person( "Thomas", "Wutzler", role=c("aut","cre"), email="twutz@bgc-jena.mpg.de" )
               ,person( c("Antje","Maria"), "Moffat", role=c("aut","trl"), email="antje.moffat@bgc.mpg.de" )
               )
-Description: Extension to REddyProc that allows reading data from NetCDF files.
-URL: https://www.bgc-jena.mpg.de/bgi/index.php/Services/REddyProcWeb, 
-  http://r-forge.r-project.org/projects/reddyproc/
+Description: Extension to REddyProc that allows reading data from netCDF files.
+URL: https://github.com/bgctw/REddyProcNCDF
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
-VignetteBuilder: knitr
 Depends: R (>= 3.0.0), REddyProc
 Suggests: ncdf4, RNetCDF, testthat, knitr, rmarkdown
 Remotes: bgctw/REddyProc
+RoxygenNote: 6.0.1
