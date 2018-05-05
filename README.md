@@ -58,6 +58,7 @@ examplePath <- system.file(
   file.path('examples','Example_DE-Tha.1996.1998.hourly_selVars.nc')
   , package = "REddyProcNCDF")
 EddyData.F <- fLoadFluxNCIntoDataframe(c('NEE', 'Rg', 'NEE_f'), examplePath)
+#> Loading required namespace: RNetCDF
 #> Converted time format 'YMDH' to POSIX with column name 'DateTime'.
 #> character(0)
 #> Loaded BGI Fluxnet NC file: /home/twutz/R/x86_64-pc-linux-gnu-library/3.4/REddyProcNCDF/examples/Example_DE-Tha.1996.1998.hourly_selVars.nc with the following headers:
