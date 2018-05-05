@@ -4,7 +4,7 @@ language: R
 #sudo: false
 sudo: required  # to allow r_binary_packages
 cache: packages
-#env: _R_CHECK_FORCE_SUGGESTS_=false
+env: _R_CHECK_FORCE_SUGGESTS_=false
 
 # libraries necessary for RNetCDF and ncdf4
 addons:
