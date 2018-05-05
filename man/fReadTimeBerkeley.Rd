@@ -2,16 +2,14 @@
 \alias{fReadTimeBerkeley}
 \title{fReadTimeBerkeley}
 \description{Reads time columns (year, month, day, hour) from column in ISODate integer format}
-\usage{fReadTimeBerkeley(Data.F, FileName.s, Dir.s, 
-    NcPackage.s, CallFunction.s = "", colTime = "TIMESTAMP_END", 
+\usage{fReadTimeBerkeley(data, fileName, ncPkg = requireNetCDFPackage(), 
+    callingFunction = "", colTime = "TIMESTAMP_END", 
     ...)}
 \arguments{
-  \item{Data.F}{Data frame}
-  \item{FileName.s}{NetCDF file name as a string}
-  \item{Dir.s}{Directory as a string}
-  \item{NcPackage.s}{Name (string) of R NetCDF package
-(implemented for 'RNetCDF' and 'ncdf4')}
-  \item{CallFunction.s}{Name (string) of function called from}
+  \item{data}{Data frame}
+  \item{fileName}{NetCDF file name as a string}
+  \item{ncPkg}{scalar string of package name to be used}
+  \item{callingFunction}{Name (string) of function called from}
   \item{colTime}{the column name (string) holding time with
 format described in details}
   \item{\dots}{further arguments to var.get.nc or ncvar_get, such as

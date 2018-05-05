@@ -23,6 +23,13 @@ The main functions
 \item{ Reading a specific variable from a NetCDF file: \code{\link{fAddNCFVar}} }
 }%itemize
 
+The package works with alternative backend-packages that are installed.
+For the default is the first entry of argument \code{packageNames}
+in \code{\link{requireNetCDFPackage}}.
+If the preference order for a specific package is changed, provide argument
+use: \code{prefNcPkg = requireNetCDFPackage(myPreferenceNameVector)} and
+subsequently specify argument \code{ncPkg = prefNcPkg} to other functions.
+
 Time may be stored in different formats, and \code{\link{fLoadFluxNCIntoDataframe}}
 is parameterized by a argument \code{fReadTime}.
 The following functions are provided to construct time from different formats:

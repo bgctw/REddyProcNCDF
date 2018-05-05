@@ -2,18 +2,15 @@
 \alias{fReadTimeSeveralCols}
 \title{fReadTimeSeveralCols}
 \description{Constructing time from columnns 'year',...,'hour'}
-\usage{fReadTimeSeveralCols(Data.F, FileName.s, 
-    Dir.s, NcPackage.s, CallFunction.s = "", 
-    colYear = "year", colMonth = "month", 
-    colDay = "day", colHour = "hour", defaultHour = 0, 
-    ...)}
+\usage{fReadTimeSeveralCols(data, fileName, ncPkg = requireNetCDFPackage(), 
+    callingFunction = "", colYear = "year", 
+    colMonth = "month", colDay = "day", colHour = "hour", 
+    defaultHour = 0, ...)}
 \arguments{
-  \item{Data.F}{Data frame}
-  \item{FileName.s}{NetCDF file name as a string}
-  \item{Dir.s}{Directory as a string}
-  \item{NcPackage.s}{Name (string) of R NetCDF package
-(implemented for 'RNetCDF' and 'ncdf4')}
-  \item{CallFunction.s}{Name (string) of function called from}
+  \item{data}{Data frame}
+  \item{fileName}{NetCDF file name as a string}
+  \item{ncPkg}{scalar string of package name to be used}
+  \item{callingFunction}{Name (string) of function called from}
   \item{colYear}{Name (string) of variable holding the year}
   \item{colMonth}{Name (string) of variable holding the month}
   \item{colDay}{Name (string) of variable holding the day}

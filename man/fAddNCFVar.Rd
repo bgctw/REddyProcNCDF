@@ -2,18 +2,17 @@
 \alias{fAddNCFVar}
 \title{fAddNCFVar}
 \description{Add variable from NetCDF file to data frame}
-\usage{fAddNCFVar(Data.F, Var.s, FileName.s, Dir.s, 
-    NcPackage.s, CallFunction.s = "", VarNew.s = Var.s, 
+\usage{fAddNCFVar(data, varNames, fileName, ncPkg = requireNetCDFPackage(), 
+    callingFunction = "", varRenames = varNames, 
     ...)}
 \arguments{
-  \item{Data.F}{Data frame}
-  \item{Var.s}{Variable name or names (vector of strings)}
-  \item{FileName.s}{NetCDF file name as a string}
-  \item{Dir.s}{Directory as a string}
-  \item{NcPackage.s}{Name (string) of R NetCDF package
-(implemented for 'RNetCDF' and 'ncdf4')}
-  \item{CallFunction.s}{Name (string) of function called from}
-  \item{VarNew.s}{Name (string) of the variable in Data.F, offer renaming}
+  \item{data}{Data frame}
+  \item{varNames}{Variable name or names (vector of strings)}
+  \item{fileName}{NetCDF file name as a string}
+  \item{ncPkg}{scalar string of package name to be used
+to be tried to used in this order}
+  \item{callingFunction}{Name (string) of function called from}
+  \item{varRenames}{Name (string) of the variable in data, offer renaming}
   \item{\dots}{further arguments to var.get.nc or ncvar_get
 , such as start and count}
 }

@@ -3,14 +3,12 @@
 \title{Get site information from BGI NetCDF files}
 \description{Load site information attributes such as latitude, longitude and others
 from BGI NetCDF files}
-\usage{fLoadFluxNCInfo(FileName.s, Dir.s, NcPackage.s = "ncdf4", 
-    CallFunction.s = "")}
+\usage{fLoadFluxNCInfo(fileName, ncPkg = requireNetCDFPackage(), 
+    callingFunction = "")}
 \arguments{
-  \item{FileName.s}{NetCDF file name as a string}
-  \item{Dir.s}{Directory as a string}
-  \item{NcPackage.s}{Name (string) of R NetCDF package
-(implemented for 'RNetCDF' and 'ncdf4')}
-  \item{CallFunction.s}{Name (string) of function called from}
+  \item{fileName}{NetCDF file name as a string}
+  \item{ncPkg}{scalar string of package name to be used}
+  \item{callingFunction}{Name (string) of function called from}
 }
 \details{Description of attribute list:\describe{
 \item{ID}{SiteID}

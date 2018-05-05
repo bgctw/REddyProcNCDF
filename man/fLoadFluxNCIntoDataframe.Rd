@@ -5,15 +5,13 @@
 Fluxnet BGI format.
 The time stamp information needs to be provided as variables
 'year', 'month', 'day', 'hour'.}
-\usage{fLoadFluxNCIntoDataframe(VarList.V.s, FileName.s, 
-    Dir.s = "", NcPackage.s = "ncdf4", fReadTime = fReadTimeSeveralCols, 
+\usage{fLoadFluxNCIntoDataframe(varNames, fileName, 
+    ncPkg = requireNetCDFPackage(), fReadTime = fReadTimeSeveralCols, 
     ...)}
 \arguments{
-  \item{VarList.V.s}{String vector of variables to be read in}
-  \item{FileName.s}{File name as a string}
-  \item{Dir.s}{Directory as a string}
-  \item{NcPackage.s}{Name of R NetCDF package
-(implemented for 'RNetCDF' and 'ncdf4') as a string}
+  \item{varNames}{string vector of variables to be read in}
+  \item{fileName}{File name as a string}
+  \item{ncPkg}{scalar string of package name to be used}
   \item{fReadTime}{function that reads time columns
 It must append columns year (from 0AD), month, day, and hour (fractional)
 See \code{\link{fReadTimeSeveralCols}}}
@@ -29,6 +27,8 @@ Department for Biogeochemical Integration at MPI-BGC, Jena, Germany <REddyProc-h
 
 
 \examples{\donttest{
-EddyNCData.F <- fLoadFluxNCIntoDataframe(c('NEE', 'Rg', 'NEE_f')
-, getExamplePath('Example_DE-Tha.1996.1998.hourly_selVars.nc', TRUE))
+examplePath <- system.file(
+file.path('examples','Example_DE-Tha.1996.1998.hourly_selVars.nc')
+, package = "REddyProcNCDF")
+EddyNCData <- fLoadFluxNCIntoDataframe(c('NEE', 'Rg', 'NEE_f'), examplePath)
 }}
