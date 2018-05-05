@@ -25,7 +25,7 @@ The main functions
 
 The package works with alternative backend-packages that are installed.
 For the default is the first entry of argument \code{packageNames}
-in \code{\link{fLoadFluxNCIntoDataframe}}.
+in \code{\link{requireNetCDFPackage}}.
 If the preference order for a specific package is changed, provide argument
 use: \code{prefNcPkg = requireNetCDFPackage(myPreferenceNameVector)} and
 subsequently specify argument \code{ncPkg = prefNcPkg} to other functions.

@@ -19,26 +19,26 @@ fLoadFluxNCIntoDataframe <- function(
   # Check for R NetCDF packages
   ncPkg <- requireNetCDFPackage(ncPkg)
   # Read in time variables
-  Data.F <- fReadTime(
+  data <- fReadTime(
     NULL, fileName, ncPkg = ncPkg, 'fLoadFluxNCIntoDataframe', ...)
   # Convert time format to POSIX
   # !Attention: Use YMDH time format because julday and hour time stamps
   # inconsistent at end of year
-  Data.F <- fConvertTimeToPosix(
-    Data.F, 'YMDH', Year.s = 'year', Month.s = 'month'
+  data <- fConvertTimeToPosix(
+    data, 'YMDH', Year.s = 'year', Month.s = 'month'
     , Day.s = 'day', Hour.s = 'hour')
   # Read in variables from a given list of needed variables
   # capture both stdErr and stdOut from fAddNCVar, so that messages can be suppressed
   msgFromfAddNCFVar <- capture.output(capture.output(
-		  Data.F <- fAddNCFVar(
-		    Data.F, setdiff(varNames, colnames(Data.F)), fileName, ncPkg = ncPkg
+		  data <- fAddNCFVar(
+		    data, setdiff(varNames, colnames(data)), fileName, ncPkg = ncPkg
 		    , 'fLoadFluxNCIntoDataframe', ...)
 		  , type = c("message")))
   message(msgFromfAddNCFVar)
   message('Loaded BGI Fluxnet NC file: ', fileName, ' with the following headers:')
-  message(' *** ', paste(colnames(Data.F), '(', as.character(lapply(
-    Data.F, attr, which = 'units')), ')', collapse = ' ', sep = ''))
-  Data.F
+  message(' *** ', paste(colnames(data), '(', as.character(lapply(
+    data, attr, which = 'units')), ')', collapse = ' ', sep = ''))
+  data
   ##value<<
   ## Data frame with data from nc file.
   ##examples<<
@@ -89,10 +89,10 @@ requireNetCDFPackage <- function(
 #' @export
 fReadTimeSeveralCols <- function(
 		### Constructing time from columnns 'year',...,'hour'
-		Data.F                ##<< Data frame
+		data                ##<< Data frame
 		, fileName          ##<< NetCDF file name as a string
 		, ncPkg = requireNetCDFPackage()    ##<< scalar string of package name to be used
-		, CallFunction.s = '' ##<< Name (string) of function called from
+		, callingFunction = '' ##<< Name (string) of function called from
 		, colYear = 'year'	  ##<< Name (string) of variable holding the year
 		, colMonth = 'month'	##<< Name (string) of variable holding the month
 		, colDay = 'day'		  ##<< Name (string) of variable holding the day
@@ -113,25 +113,25 @@ fReadTimeSeveralCols <- function(
   ##   }
   ##seealso<< \code{\link{fLoadFluxNCIntoDataframe}}
   if (!length(colHour) ) {
-		Data.F <- fAddNCFVar(
-		  Data.F, c(colYear, colMonth, colDay), fileName,  ncPkg = ncPkg
-		  , CallFunction.s, VarNew.s = c("year", "month", "day"), ...)
-		Data.F$hour <- defaultHour
+		data <- fAddNCFVar(
+		  data, c(colYear, colMonth, colDay), fileName,  ncPkg = ncPkg
+		  , callingFunction, varRenames = c("year", "month", "day"), ...)
+		data$hour <- defaultHour
 	} else {
-		Data.F <- fAddNCFVar(
-		  Data.F, c(colYear, colMonth, colDay, colHour), fileName,  ncPkg = ncPkg
-		  , CallFunction.s, VarNew.s = c("year", "month", "day", "hour"), ...)
+		data <- fAddNCFVar(
+		  data, c(colYear, colMonth, colDay, colHour), fileName,  ncPkg = ncPkg
+		  , callingFunction, varRenames = c("year", "month", "day", "hour"), ...)
 	}
-	Data.F
+	data
 }
 
 #' @export
 fReadTimeBerkeley <- function(
 		### Reads time columns (year, month, day, hour) from column in ISODate integer format
-		Data.F                ##<< Data frame
+		data                ##<< Data frame
 		, fileName           ##<< NetCDF file name as a string
 		, ncPkg = requireNetCDFPackage()    ##<< scalar string of package name to be used
-		, CallFunction.s = ''    ##<< Name (string) of function called from
+		, callingFunction = ''    ##<< Name (string) of function called from
 		, colTime = 'TIMESTAMP_END'	##<< the column name (string) holding time with
 		  ## format described in details
 		, ...					##<< further arguments to var.get.nc or ncvar_get, such as
@@ -143,18 +143,18 @@ fReadTimeBerkeley <- function(
 	#
 	##seealso<< \code{\link{fReadTimeSeveralCols}}
   ##seealso<< \code{\link{fLoadFluxNCIntoDataframe}}
-	Data.F <- fAddNCFVar(Data.F, colTime, fileName,  ncPkg = ncPkg
-	                     , CallFunction.s, ...)
-	timeStampChar <- as.character(Data.F[[colTime]])
-	Data.F <- cbind(Data.F, data.frame(
+	data <- fAddNCFVar(data, colTime, fileName,  ncPkg = ncPkg
+	                     , callingFunction, ...)
+	timeStampChar <- as.character(data[[colTime]])
+	data <- cbind(data, data.frame(
 					year = as.integer(substr(timeStampChar, 1, 4))
 					, month = as.integer(substr(timeStampChar, 5, 6))
 					, day = as.integer(substr(timeStampChar, 7, 8))
 					, hour = as.integer(substr(timeStampChar, 9, 10)) +
 						as.integer(substr(timeStampChar, 11, 12)) / 60
 	))
-	#str(Data.F)
-	Data.F
+	#str(data)
+	data
 }
 
 .tmp.f <- function() {
@@ -171,20 +171,20 @@ fReadTimeBerkeley <- function(
 fAddNCFVar <- function(
   ##description<<
   ## Add variable from NetCDF file to data frame
-  Data.F                ##<< Data frame
-  , Var.s                ##<< Variable name or names (vector of strings)
+  data                ##<< Data frame
+  , varNames                ##<< Variable name or names (vector of strings)
   , fileName           ##<< NetCDF file name as a string
   , ncPkg = requireNetCDFPackage()    ##<< scalar string of package name to be used
   ## to be tried to used in this order
-  , CallFunction.s = ''    ##<< Name (string) of function called from
-  , VarNew.s = Var.s		 ##<< Name (string) of the variable in Data.F, offer renaming
+  , callingFunction = ''    ##<< Name (string) of function called from
+  , varRenames = varNames		 ##<< Name (string) of the variable in data, offer renaming
   , ...					##<< further arguments to var.get.nc or ncvar_get
     ## , such as start and count
 ) {
   ##author<< AMM, KS, TW
   ##seealso<< \code{\link{fLoadFluxNCIntoDataframe}}
-  if (length(VarNew.s) != length(Var.s) ) stop(
-    "VarNew.s must have the same length as Var.s")
+  if (length(varRenames) != length(varNames) ) stop(
+    "varRenames must have the same length as varNames")
   InputNCF.s <- fSetFile(fileName, T, 'fAddNCFVar')
   if (ncPkg == 'RNetCDF') {
 	  fOpen <- RNetCDF::open.nc
@@ -204,33 +204,33 @@ fAddNCFVar <- function(
 	NCFile.C <- fOpen(InputNCF.s)	# NCFile.C <- nc_open(InputNCF.s)
 	tmpFilename <- tempfile(); tmpFile <- file(tmpFilename, open = "wt")
 	tryCatch({
-				newCols <- lapply(seq_along(Var.s), function(i) {
-							newCol <- try(as.vector(fReadVar(NCFile.C, Var.s[i], ...)) )
+				newCols <- lapply(seq_along(varNames), function(i) {
+							newCol <- try(as.vector(fReadVar(NCFile.C, varNames[i], ...)) )
 							if (length(newCol) && !inherits(newCol, "try-error")) {
-								attr(newCol, 'varnames') <- VarNew.s[i]
+								attr(newCol, 'varnames') <- varRenames[i]
 								# to prevent error message, that appears even with
 								# try(, silent = TRUE) on non-existing attribute
 								sink(tmpFile, type = "message")
 								try(attr(newCol, 'units') <- fGetAtt(
-								  NCFile.C, Var.s[i], 'units'), silent = TRUE)
+								  NCFile.C, varNames[i], 'units'), silent = TRUE)
 								sink(NULL, type = "message")
 								newCol
 							} else {
-								warning("could not read variable ", Var.s[i]
+								warning("could not read variable ", varNames[i]
 								        , " from netCdf-File ", fileName)
 								return(NULL)
 							}
-							#attr(Data.F[[1]], 'units')
+							#attr(data[[1]], 'units')
 						})
-				names(newCols) <- VarNew.s
+				names(newCols) <- varRenames
 				newCols.F <- as.data.frame(newCols[sapply(newCols, length) != 0L])
-				# Use c() instead of cbind() to be able to bind dataframe Data.F
+				# Use c() instead of cbind() to be able to bind dataframe data
 				# even if empty
 				# twutz160121: c gives a list instead of error when nRows differ
-				# between Data.F and newCol.F (e.g. with different count argument to
+				# between data and newCol.F (e.g. with different count argument to
 				# fReadVar), therefore better use cbind
 				if (nrow(newCols.F) )
-					Data.F <- if (length(Data.F)) cbind(Data.F, newCols.F) else newCols.F
+					data <- if (length(data)) cbind(data, newCols.F) else newCols.F
 			},
 			finally = {
 				fClose(NCFile.C)
@@ -238,13 +238,13 @@ fAddNCFVar <- function(
 				unlink(tmpFilename)
 			}
 	)
-  Data.F
+  data
   ##value<<
   ## Data frame with new nc variable added.
 }
 
 .tmp.f <- function(){
-  Data.F <- NULL; Var.s <- 'NEE'
+  data <- NULL; varNames <- 'NEE'
   fileName <- 'Example_DE-Tha.1996.1998.hourly_selVars.nc'
   Dir.s <- 'inst / examples'
   ncPkg <- 'ncdf4'
@@ -261,7 +261,7 @@ fLoadFluxNCInfo <- function(
   ## from BGI NetCDF files
   fileName               ##<< NetCDF file name as a string
   , ncPkg = requireNetCDFPackage()    ##<< scalar string of package name to be used
-  , CallFunction.s = ''    ##<< Name (string) of function called from
+  , callingFunction = ''    ##<< Name (string) of function called from
 ) {
   ##author<< AMM, TW
   ##seealso<< \code{\link{fLoadFluxNCIntoDataframe}}
