@@ -6,10 +6,19 @@
 * win_builder: x86_64-w64-mingw32
 
 ## R CMD check results
-Unknown, possibly mis-spelled, fields in DESCRIPTION:
-  ‘Remotes’
-The Remotes field has been included intentionally:
-https://cran.r-project.org/web/packages/devtools/vignettes/dependencies.html
+1 Note:
+The Possibly mis-spelled words in DESCRIPTION are correct.
 
+## Response to CRAN review
 
+RC1: Possibly mis-spelled words in DESCRIPTION:
+  REddyProc (4:43, 9:27)
+Please single quote software names in Title and Description field.
+
+AC: We put REddyProc in single quotes in the Title and Description field.
+
+RC2: Unknown, possibly mis-spelled, fields in DESCRIPTION:
+  'Remotes'
+AC: We removed the Remotes field before submission to CRAN
+  
 

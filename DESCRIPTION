@@ -1,12 +1,12 @@
 Package: REddyProcNCDF
 Type: Package
 Version: 1.1.4
-Title: Reading Data from NetCDF Files for REddyProc
+Title: Reading Data from NetCDF Files for 'REddyProc'
 Authors@R: c( person( "Department for Biogeochemical Integration at MPI-BGC, Jena, Germany", role=c("cph"), email="REddyProc-help@bgc-jena.mpg.de" )
               ,person( "Thomas", "Wutzler", role=c("aut","cre"), email="twutz@bgc-jena.mpg.de" )
               ,person( c("Antje","Maria"), "Moffat", role=c("aut","trl"), email="antje.moffat@bgc.mpg.de" )
               )
-Description: Extension to REddyProc that allows reading data from netCDF files.
+Description: Extension to 'REddyProc' that allows reading data from netCDF files.
 URL: https://github.com/bgctw/REddyProcNCDF
 License: GPL (>= 2)
 Encoding: UTF-8
